@@ -2,7 +2,9 @@ public class QualityMeasurementApp {
 
     enum LengthUnit {
         FEET(1.0),
-        INCH(1.0 / 12.0);
+        INCH(1.0 / 12.0),
+        YARD(3.0),
+        CENTIMETER(0.393701 / 12.0);
 
         private final double factor;
 
@@ -39,8 +41,8 @@ public class QualityMeasurementApp {
     }
 
     public static void main(String[] args) {
-        Quantity q1 = new Quantity(1.0, LengthUnit.FEET);
-        Quantity q2 = new Quantity(12.0, LengthUnit.INCH);
+        Quantity q1 = new Quantity(1.0, LengthUnit.YARD);
+        Quantity q2 = new Quantity(3.0, LengthUnit.FEET);
         System.out.println(q1.equals(q2));
     }
 }

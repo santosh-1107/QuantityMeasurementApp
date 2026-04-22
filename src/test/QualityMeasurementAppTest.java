@@ -4,87 +4,88 @@ import static org.junit.jupiter.api.Assertions.*;
 public class QualityMeasurementAppTest {
 
     @Test
-    void testFeetToInch() {
-        assertEquals(12.0, QualityMeasurementApp.convert(1.0,
-                QualityMeasurementApp.LengthUnit.FEET,
-                QualityMeasurementApp.LengthUnit.INCH), 1e-6);
+    void testFeetPlusFeet() {
+        var a = new QualityMeasurementApp.Quantity(1.0, QualityMeasurementApp.LengthUnit.FEET);
+        var b = new QualityMeasurementApp.Quantity(2.0, QualityMeasurementApp.LengthUnit.FEET);
+        assertEquals(3.0, a.add(b).getValue(), 1e-6);
     }
 
     @Test
-    void testInchToFeet() {
-        assertEquals(2.0, QualityMeasurementApp.convert(24.0,
-                QualityMeasurementApp.LengthUnit.INCH,
-                QualityMeasurementApp.LengthUnit.FEET), 1e-6);
+    void testInchPlusInch() {
+        var a = new QualityMeasurementApp.Quantity(6.0, QualityMeasurementApp.LengthUnit.INCH);
+        var b = new QualityMeasurementApp.Quantity(6.0, QualityMeasurementApp.LengthUnit.INCH);
+        assertEquals(12.0, a.add(b).getValue(), 1e-6);
     }
 
     @Test
-    void testYardToInch() {
-        assertEquals(36.0, QualityMeasurementApp.convert(1.0,
-                QualityMeasurementApp.LengthUnit.YARD,
-                QualityMeasurementApp.LengthUnit.INCH), 1e-6);
+    void testFeetPlusInch() {
+        var a = new QualityMeasurementApp.Quantity(1.0, QualityMeasurementApp.LengthUnit.FEET);
+        var b = new QualityMeasurementApp.Quantity(12.0, QualityMeasurementApp.LengthUnit.INCH);
+        assertEquals(2.0, a.add(b).getValue(), 1e-6);
     }
 
     @Test
-    void testInchToYard() {
-        assertEquals(2.0, QualityMeasurementApp.convert(72.0,
-                QualityMeasurementApp.LengthUnit.INCH,
-                QualityMeasurementApp.LengthUnit.YARD), 1e-6);
+    void testInchPlusFeet() {
+        var a = new QualityMeasurementApp.Quantity(12.0, QualityMeasurementApp.LengthUnit.INCH);
+        var b = new QualityMeasurementApp.Quantity(1.0, QualityMeasurementApp.LengthUnit.FEET);
+        assertEquals(24.0, a.add(b).getValue(), 1e-6);
     }
 
     @Test
-    void testCmToInch() {
-        assertEquals(1.0, QualityMeasurementApp.convert(2.54,
-                QualityMeasurementApp.LengthUnit.CENTIMETER,
-                QualityMeasurementApp.LengthUnit.INCH), 1e-6);
+    void testYardPlusFeet() {
+        var a = new QualityMeasurementApp.Quantity(1.0, QualityMeasurementApp.LengthUnit.YARD);
+        var b = new QualityMeasurementApp.Quantity(3.0, QualityMeasurementApp.LengthUnit.FEET);
+        assertEquals(2.0, a.add(b).getValue(), 1e-6);
     }
 
     @Test
-    void testFeetToYard() {
-        assertEquals(2.0, QualityMeasurementApp.convert(6.0,
-                QualityMeasurementApp.LengthUnit.FEET,
-                QualityMeasurementApp.LengthUnit.YARD), 1e-6);
+    void testCmPlusInch() {
+        var a = new QualityMeasurementApp.Quantity(2.54, QualityMeasurementApp.LengthUnit.CENTIMETER);
+        var b = new QualityMeasurementApp.Quantity(1.0, QualityMeasurementApp.LengthUnit.INCH);
+        assertEquals(5.08, a.add(b).getValue(), 1e-2);
     }
 
     @Test
-    void testRoundTrip() {
-        double v = 5.0;
-        double result = QualityMeasurementApp.convert(
-                QualityMeasurementApp.convert(v,
-                        QualityMeasurementApp.LengthUnit.FEET,
-                        QualityMeasurementApp.LengthUnit.INCH),
-                QualityMeasurementApp.LengthUnit.INCH,
-                QualityMeasurementApp.LengthUnit.FEET);
-        assertEquals(v, result, 1e-6);
+    void testCommutativity() {
+        var a = new QualityMeasurementApp.Quantity(1.0, QualityMeasurementApp.LengthUnit.FEET);
+        var b = new QualityMeasurementApp.Quantity(12.0, QualityMeasurementApp.LengthUnit.INCH);
+        double r1 = a.add(b).getValue();
+        double r2 = b.add(a).getValue();
+        assertEquals(2.0, r1, 1e-6);
+        assertEquals(24.0, r2, 1e-6);
     }
 
     @Test
     void testZero() {
-        assertEquals(0.0, QualityMeasurementApp.convert(0.0,
-                QualityMeasurementApp.LengthUnit.FEET,
-                QualityMeasurementApp.LengthUnit.INCH), 1e-6);
+        var a = new QualityMeasurementApp.Quantity(5.0, QualityMeasurementApp.LengthUnit.FEET);
+        var b = new QualityMeasurementApp.Quantity(0.0, QualityMeasurementApp.LengthUnit.INCH);
+        assertEquals(5.0, a.add(b).getValue(), 1e-6);
     }
 
     @Test
     void testNegative() {
-        assertEquals(-12.0, QualityMeasurementApp.convert(-1.0,
-                QualityMeasurementApp.LengthUnit.FEET,
-                QualityMeasurementApp.LengthUnit.INCH), 1e-6);
+        var a = new QualityMeasurementApp.Quantity(5.0, QualityMeasurementApp.LengthUnit.FEET);
+        var b = new QualityMeasurementApp.Quantity(-2.0, QualityMeasurementApp.LengthUnit.FEET);
+        assertEquals(3.0, a.add(b).getValue(), 1e-6);
     }
 
     @Test
-    void testInvalidUnit() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            QualityMeasurementApp.convert(1.0, null,
-                    QualityMeasurementApp.LengthUnit.FEET);
-        });
+    void testNullOperand() {
+        var a = new QualityMeasurementApp.Quantity(1.0, QualityMeasurementApp.LengthUnit.FEET);
+        assertThrows(IllegalArgumentException.class, () -> a.add(null));
     }
 
     @Test
-    void testNaN() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            QualityMeasurementApp.convert(Double.NaN,
-                    QualityMeasurementApp.LengthUnit.FEET,
-                    QualityMeasurementApp.LengthUnit.INCH);
-        });
+    void testLargeValues() {
+        var a = new QualityMeasurementApp.Quantity(1e6, QualityMeasurementApp.LengthUnit.FEET);
+        var b = new QualityMeasurementApp.Quantity(1e6, QualityMeasurementApp.LengthUnit.FEET);
+        assertEquals(2e6, a.add(b).getValue(), 1e-6);
+    }
+
+    @Test
+    void testSmallValues() {
+        var a = new QualityMeasurementApp.Quantity(0.001, QualityMeasurementApp.LengthUnit.FEET);
+        var b = new QualityMeasurementApp.Quantity(0.002, QualityMeasurementApp.LengthUnit.FEET);
+        assertEquals(0.003, a.add(b).getValue(), 1e-6);
     }
 }

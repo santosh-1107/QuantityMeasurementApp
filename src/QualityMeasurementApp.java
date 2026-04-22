@@ -27,15 +27,19 @@ public class QualityMeasurementApp {
             this.unit = unit;
         }
 
-        public Quantity convertTo(LengthUnit target) {
-            if (target == null) throw new IllegalArgumentException();
-            double feet = unit.toFeet(value);
-            double converted = feet / target.toFeet(1.0);
-            return new Quantity(converted, target);
+        public double getValue() {
+            return value;
         }
 
         private double toFeet() {
             return unit.toFeet(value);
+        }
+
+        public Quantity add(Quantity other) {
+            if (other == null) throw new IllegalArgumentException();
+            double sumFeet = this.toFeet() + other.toFeet();
+            double result = sumFeet / unit.toFeet(1.0);
+            return new Quantity(result, this.unit);
         }
 
         @Override
@@ -45,21 +49,11 @@ public class QualityMeasurementApp {
             Quantity q = (Quantity) obj;
             return Double.compare(this.toFeet(), q.toFeet()) == 0;
         }
-
-        @Override
-        public String toString() {
-            return value + " " + unit;
-        }
-    }
-
-    public static double convert(double value, LengthUnit source, LengthUnit target) {
-        if (source == null || target == null || !Double.isFinite(value)) throw new IllegalArgumentException();
-        double feet = source.toFeet(value);
-        return feet / target.toFeet(1.0);
     }
 
     public static void main(String[] args) {
-        System.out.println(convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
-        System.out.println(convert(3.0, LengthUnit.YARD, LengthUnit.FEET));
+        Quantity q1 = new Quantity(1.0, LengthUnit.FEET);
+        Quantity q2 = new Quantity(12.0, LengthUnit.INCH);
+        System.out.println(q1.add(q2).getValue());
     }
 }

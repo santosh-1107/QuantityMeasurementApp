@@ -1,22 +1,5 @@
 public class QualityMeasurementApp {
 
-    enum LengthUnit {
-        FEET(1.0),
-        INCH(1.0 / 12.0),
-        YARD(3.0),
-        CENTIMETER(0.393701 / 12.0);
-
-        private final double factor;
-
-        LengthUnit(double factor) {
-            this.factor = factor;
-        }
-
-        public double toFeet(double value) {
-            return value * factor;
-        }
-    }
-
     public static class Quantity {
         private final double value;
         private final LengthUnit unit;
@@ -31,21 +14,28 @@ public class QualityMeasurementApp {
             return value;
         }
 
-        private double toFeet() {
-            return unit.toFeet(value);
+        private double toBase() {
+            return unit.convertToBase(value);
+        }
+
+        public Quantity convertTo(LengthUnit target) {
+            if (target == null) throw new IllegalArgumentException();
+            double base = this.toBase();
+            double result = target.convertFromBase(base);
+            return new Quantity(result, target);
         }
 
         public Quantity add(Quantity other) {
             if (other == null) throw new IllegalArgumentException();
-            double sumFeet = this.toFeet() + other.toFeet();
-            double result = sumFeet / unit.toFeet(1.0);
-            return new Quantity(result, this.unit);
+            double sumBase = this.toBase() + other.toBase();
+            double result = unit.convertFromBase(sumBase);
+            return new Quantity(result, unit);
         }
 
         public Quantity add(Quantity other, LengthUnit target) {
             if (other == null || target == null) throw new IllegalArgumentException();
-            double sumFeet = this.toFeet() + other.toFeet();
-            double result = sumFeet / target.toFeet(1.0);
+            double sumBase = this.toBase() + other.toBase();
+            double result = target.convertFromBase(sumBase);
             return new Quantity(result, target);
         }
 
@@ -54,13 +44,13 @@ public class QualityMeasurementApp {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
             Quantity q = (Quantity) obj;
-            return Double.compare(this.toFeet(), q.toFeet()) == 0;
+            return Double.compare(this.toBase(), q.toBase()) == 0;
         }
     }
 
     public static void main(String[] args) {
         Quantity a = new Quantity(1.0, LengthUnit.FEET);
         Quantity b = new Quantity(12.0, LengthUnit.INCH);
-        System.out.println(a.add(b, LengthUnit.YARD).getValue());
+        System.out.println(a.convertTo(LengthUnit.INCH).getValue());
     }
 }
